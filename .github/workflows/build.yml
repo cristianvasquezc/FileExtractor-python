@@ -1,0 +1,63 @@
+name: Build and Package
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+
+    - name: Build Portable Version (OneFile)
+      run: |
+        pyinstaller --onefile --windowed --icon=icon.ico --name=FileExtractor_Portable --add-data "icon.ico;." main.py
+
+    - name: Build Installer Version (OneDir)
+      run: |
+        pyinstaller --onedir --windowed --icon=icon.ico --name=FileExtractor --add-data "icon.ico;." --add-data "LICENSE;." main.py
+
+    - name: Set up NSIS
+      run: choco install nsis -y
+
+    - name: Fix Encoding
+      run: |
+        $content = Get-Content installer/setup.nsi -Raw
+        [System.IO.File]::WriteAllText("installer/setup.nsi", $content, [System.Text.Encoding]::UTF8)
+
+    - name: Build NSIS Installer
+      uses: joncloud/makensis-action@v4
+      with:
+        script-file: installer/setup.nsi
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: FileExtractor-Builds
+        path: |
+          dist/FileExtractor_Portable.exe
+          FileExtractor.exe
+
+    - name: Publish to Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          dist/FileExtractor_Portable.exe
+          FileExtractor.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
