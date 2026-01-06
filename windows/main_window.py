@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-import sys
+from .about_window import AboutWindow
 import os
 import shutil
 
@@ -8,9 +8,11 @@ EXTENSIONS = [".mp4", ".mxf", ".lrv", ".xml", ".smi", ".cue", ".ppn", ".bim", ".
 
 class MainWindow:
     def __init__(self, root):
+        self.root = root
         root.title("File Extractor")
-        root.geometry("400x185")
         root.resizable(False, False)
+        root.center_window(400, 185)
+        root.set_app_icon()
 
         # ===== Entrada =====
         ttk.Label(root, text="Carpeta de entrada").place(x=10, y=8)
@@ -72,10 +74,7 @@ class MainWindow:
     # ================= LÓGICA =================
 
     def show_about(self, event=None):
-        messagebox.showinfo(
-            "About",
-            "File Extractor\nVersión Tkinter"
-        )
+        AboutWindow(self.root)
 
     def update_ext(self, event=None):
         self.lbl_ext.config(text=f"Ext: {self.combo_ext.get()}")
