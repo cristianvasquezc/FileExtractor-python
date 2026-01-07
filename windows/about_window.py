@@ -1,17 +1,32 @@
 import tkinter as tk
 from tkinter import ttk
 import webbrowser
+from PIL import Image, ImageTk
+from .utils import resource_path
 
 class AboutWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
+        self.withdraw()
         self.title("Acerca de File Extractor")
         self.resizable(False, False)
-        self.center_window(250, 330)        
+        self.center_window(250, 410)        
         self.set_app_icon()
+        self.deiconify()
         
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(expand=True, fill="both")
+
+        # Icono
+        try:
+            icon_path = resource_path("icon.ico")
+            img = Image.open(icon_path)
+            img = img.resize((64, 64), Image.Resampling.LANCZOS)
+            self.photo = ImageTk.PhotoImage(img)
+            icon_label = ttk.Label(main_frame, image=self.photo)
+            icon_label.pack(pady=(0, 10))
+        except Exception:
+            pass
         
         # Título
         title_label = ttk.Label(
