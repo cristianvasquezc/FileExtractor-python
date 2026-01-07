@@ -3,6 +3,7 @@ from tkinter import ttk
 import webbrowser
 from PIL import Image, ImageTk
 from .utils import resource_path
+from version import VERSION
 
 class AboutWindow(tk.Toplevel):
     def __init__(self, parent):
@@ -61,7 +62,7 @@ class AboutWindow(tk.Toplevel):
         info_frame.pack(fill="x")
         
         ttk.Label(info_frame, text="Versión:", font=("Segoe UI", 9, "bold")).pack(side="left")
-        ttk.Label(info_frame, text=" 1.0.0").pack(side="left")
+        ttk.Label(info_frame, text=f" {VERSION}").pack(side="left")
         
         # Link Developer
         dev_frame = ttk.Frame(main_frame)
