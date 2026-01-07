@@ -18,6 +18,13 @@ jobs:
       with:
         python-version: '3.11'
 
+    - name: Get version
+      id: get_version
+      shell: pwsh
+      run: |
+        $version = (Get-Content version.py | Select-String -Pattern 'VERSION = "(.*)"').Matches.Groups[1].Value
+        "APP_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -43,6 +50,7 @@ jobs:
       uses: joncloud/makensis-action@v4
       with:
         script-file: installer/setup.nsi
+        arguments: /DPRODUCT_VERSION=${{ env.APP_VERSION }}
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
